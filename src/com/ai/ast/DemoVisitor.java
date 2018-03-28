@@ -3,8 +3,10 @@ package com.ai.ast;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
@@ -78,7 +80,19 @@ public class DemoVisitor extends ASTVisitor {
 				System.out.print(list.get(i));
 				System.out.println("it a ExpressionStatement");
 				ExpressionStatement ifs = (ExpressionStatement) list.get(i);
-				//System.out.println("get Type: "+ ifs.);
+				Expression ex = ifs.getExpression();
+				if(ex.getClass().getSimpleName().equals("Assignment")){
+					Assignment as = (Assignment)ex;
+					System.out.println("get LeftHandSide: "+ as.getLeftHandSide());
+					System.out.println("get RightHandSide: "+ as.getRightHandSide());
+					System.out.println("get Operator: "+ as.getOperator());
+				}else if(ex.getClass().getSimpleName().equals("MethodInvocation")){
+					MethodInvocation mi = (MethodInvocation)ex;
+					System.out.println("get Name: "+ mi.getName());
+					System.out.println("get Arguments: "+ mi.arguments());
+					System.out.println("get Expression: "+ mi.getExpression());
+					System.out.println("get Operators: "+ mi.properties());
+				}
 			}else{
 				System.out.print(list.get(i).getClass().getSimpleName());
 			}
