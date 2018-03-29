@@ -97,6 +97,12 @@ public class DemoVisitor extends ASTVisitor {
 				System.out.print(list.get(i).getClass().getSimpleName());
 			}
 		}
+		
+		//»ñÈ¡×¢ÊÍ;
+		System.out.println("annotation: "+node.getJavadoc());
+		
+		
+		
 		System.out.println("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 		
 		

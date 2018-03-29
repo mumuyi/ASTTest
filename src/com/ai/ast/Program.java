@@ -13,6 +13,9 @@ public class Program {
 	private int field1;
 	private int field2, a, s, d;
 
+	/**
+	 * ÎÒÔÚĞ´×¢ÊÍ;
+	 * */
 	static void main(String[] args) {
 		int i = 10;
 		int j = 0;
