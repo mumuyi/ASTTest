@@ -1,4 +1,4 @@
-package com.ai.ast;
+package cn.nuaa.ai.ast;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;

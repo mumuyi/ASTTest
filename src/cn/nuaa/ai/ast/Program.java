@@ -1,4 +1,4 @@
-package com.ai.ast;
+package cn.nuaa.ai.ast;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -16,7 +16,7 @@ public class Program {
 	/**
 	 * ÎÒÔÚĞ´×¢ÊÍ;
 	 * */
-	static void main(String[] args) {
+	public static void main(String[] args) {
 		int i = 10;
 		int j = 0;
 		j = i;
@@ -37,5 +37,9 @@ public class Program {
 			System.out.println("asdasdasdasdasdasd");
 		}
 		System.out.println(j);
+	}
+	
+	private void TestMethod(){
+		System.out.println("asdasdasdasdasd");
 	}
 }

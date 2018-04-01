@@ -1,4 +1,4 @@
-package com.ai.ast;
+package cn.nuaa.ai.ast;
 
 import java.util.List;
 
