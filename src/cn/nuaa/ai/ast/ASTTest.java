@@ -4,7 +4,11 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,11 +27,11 @@ public class ASTTest {
 	private static LinkedList<File> queueFiles = new LinkedList<File>();
 
 	public static void main(String[] args) {
-		
-		
+		getClassFile();
 	}
 
-	private static void SingleFileTest(){
+	// 单个文件解析;
+	private static void SingleFileTest() {
 		projectName = "TestClass";
 		className = "Program";
 		CompilationUnit comp = getCompilationUnit("C:\\Users\\ai\\Desktop\\code\\IndexFiles.java");
@@ -39,11 +43,12 @@ public class ASTTest {
 		// 返回了整个类,暂时不知道干嘛的;
 		// System.out.println(comp.types());
 	}
-	
-	private static void SingleProjectTest(){
-		scanFilesWithNoRecursion("E:\\迅雷下载\\github data dump\\Activiti-develop");
-		
-		for(int i=0;i<scanFiles.size();i++){
+
+	// 单个工程解析;
+	private static void SingleProjectTest() {
+		scanFilesWithNoRecursion("E:\\迅雷下载\\github data dump\\Activiti-develop", ".java");
+
+		for (int i = 0; i < scanFiles.size(); i++) {
 			File file = scanFiles.get(i);
 			System.out.println(file);
 			className = file.getName();
@@ -53,16 +58,17 @@ public class ASTTest {
 			comp.accept(visitor);
 		}
 	}
-	
-	private static void Compelte(){
-		
+
+	// AST特征抽取完整;
+	private static void Compelte() {
+
 		List<String> list = scanProjects("E:\\迅雷下载\\github data dump");
-		
-		for(int i = 0;i<list.size();i++){
-			//System.out.println(list.get(i));
-			scanFilesWithNoRecursion("E:\\迅雷下载\\github data dump\\" + list.get(i));
+
+		for (int i = 0; i < list.size(); i++) {
+			// System.out.println(list.get(i));
+			scanFilesWithNoRecursion("E:\\迅雷下载\\github data dump\\" + list.get(i), ".java");
 			projectName = list.get(i);
-			for(int j = 0;j < scanFiles.size();j++){
+			for (int j = 0; j < scanFiles.size(); j++) {
 				File file = scanFiles.get(j);
 				System.out.println(file);
 				className = file.getName();
@@ -70,9 +76,27 @@ public class ASTTest {
 				MyVisitor visitor = new MyVisitor();
 				comp.accept(visitor);
 			}
-		}	
+			scanFiles.clear();
+		}
 	}
-	
+
+	// 抽取.class文件;
+	private static void getClassFile() {
+
+		List<String> list = scanProjects("E:\\迅雷下载\\github data dump");
+		for (int i = 0; i < list.size(); i++) {
+			projectName = list.get(i);
+			scanFilesWithNoRecursion("E:\\迅雷下载\\github data dump\\" + list.get(i), ".class");
+			for (int j = 0; j < scanFiles.size(); j++) {
+				File file = scanFiles.get(j);
+				//System.out.println(file);
+				copyFile(file, projectName);
+			}
+			System.out.println(projectName + " num: " + scanFiles.size());
+			scanFiles.clear();
+		}
+	}
+
 	public static CompilationUnit getCompilationUnit(String javaFilePath) {
 		byte[] input = null;
 		try {
@@ -95,7 +119,7 @@ public class ASTTest {
 		return result;
 	}
 
-	private static ArrayList<File> scanFilesWithNoRecursion(String folderPath) {
+	private static ArrayList<File> scanFilesWithNoRecursion(String folderPath, String endstr) {
 		File directory = new File(folderPath);
 		if (!directory.isDirectory()) {
 			System.out.println(directory + " is not a directory");
@@ -108,7 +132,7 @@ public class ASTTest {
 					queueFiles.add(files[i]);
 				} else {
 					// 暂时将文件名放入scanFiles中
-					if(files[i].getName().endsWith(".java"))
+					if (files[i].getName().endsWith(endstr))
 						scanFiles.add(files[i]);
 				}
 			}
@@ -123,7 +147,7 @@ public class ASTTest {
 						// 如果仍然是文件夹，将其放入linkedList中
 						queueFiles.add(currentFiles[j]);
 					} else {
-						if(currentFiles[j].getName().endsWith(".java"))
+						if (currentFiles[j].getName().endsWith(endstr))
 							scanFiles.add(currentFiles[j]);
 					}
 				}
@@ -131,7 +155,7 @@ public class ASTTest {
 		}
 		return scanFiles;
 	}
-	
+
 	private static List<String> scanProjects(String folderPath) {
 		List<String> list = new ArrayList<String>();
 		File directory = new File(folderPath);
@@ -146,5 +170,17 @@ public class ASTTest {
 			}
 		}
 		return list;
+	}
+
+	private static void copyFile(File file, String projectName) {
+		// 将指定文件复制到指定目录
+		try {
+			Files.copy(Paths.get(file.toURI()),
+					new FileOutputStream("F:\\data\\classfile\\" + projectName + "@" + file.getName()));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
