@@ -12,6 +12,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.MBeanAttributeInfo;
+
 public class ClassFileAnalysis {
 
 	private static List<String> list = new ArrayList<String>();
@@ -94,6 +96,7 @@ public class ClassFileAnalysis {
 				}
 			}
 			list.clear();
+			//break;
 		}
 	}
 
@@ -140,6 +143,11 @@ public class ClassFileAnalysis {
 		}
 		strlist.remove(0);
 
+		//for(String str : strlist){
+		//	System.out.println(str);
+		//}
+		
+		
 		// ≥È»°÷∏¡Ó;
 		List<String> inslist = new ArrayList<String>();
 		// System.out.println("strlist's size: " + strlist.size());
@@ -149,10 +157,18 @@ public class ClassFileAnalysis {
 			int i = 0;
 			for (String sstr : strs1) {
 				if (!"".equals(sstr) && !"\n".equals(sstr) && null != sstr) {
+					//System.out.println(sstr);
 					if (i == 0) {
 						i++;
 					} else if (i == 1) {
-						inslist.add(sstr);
+						if(sstr.equals("invokevirtual")||sstr.equals("invokespecial")||sstr.equals("invokestatic")||sstr.equals("invokeinterface")||sstr.equals("invokedynamic")){
+							StringBuffer mBuffer = new StringBuffer(sstr);
+							mBuffer.append(" ");
+							mBuffer.append(strs1[strs1.length-1]);
+							inslist.add(mBuffer.toString());
+						}else{
+							inslist.add(sstr);
+						}
 						i++;
 					} else {
 						break;
@@ -160,10 +176,10 @@ public class ClassFileAnalysis {
 				}
 			}
 		}
-		// System.out.println("Instructions:");
-		// for (String str : inslist) {
-		// System.out.println(str);
-		// }
+		//System.out.println("Instructions:");
+		//for (String str : inslist) {
+		//	System.out.println(str);
+		//}
 
 		return inslist;
 	}
