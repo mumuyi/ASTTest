@@ -47,7 +47,7 @@ public class MyVisitor extends ASTVisitor {
 		if (methodName != null && !"".equals(methodName)) {
 			if (methodBody != null && !"".equals(methodBody)) {
 				try {
-					writeFileContent("F:\\data\\methodbody\\"+ASTTest.projectName+"@"+ASTTest.className.replaceAll(".java", "")+"#"+methodName+".txt", methodBody);
+					writeFileContent("F:\\data\\jarFiles\\methodbody\\"+ASTTest.projectName.replaceAll(".jar.src", "")+"@"+ASTTest.className.replaceAll(".java", "")+"#"+methodName+".txt", methodBody);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

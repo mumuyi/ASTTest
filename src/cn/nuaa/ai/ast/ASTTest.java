@@ -27,6 +27,10 @@ public class ASTTest {
 	private static LinkedList<File> queueFiles = new LinkedList<File>();
 
 	public static void main(String[] args) {
+		
+		//Compelte();
+		//SingleProjectTest();
+		
 		getClassFile();
 	}
 
@@ -46,7 +50,7 @@ public class ASTTest {
 
 	// 单个工程解析;
 	private static void SingleProjectTest() {
-		scanFilesWithNoRecursion("E:\\迅雷下载\\github data dump\\Activiti-develop", ".java");
+		scanFilesWithNoRecursion("F:\\data\\jarFiles\\decompiled jars\\aopalliance-1.0-sources.jar.src", ".java");
 
 		for (int i = 0; i < scanFiles.size(); i++) {
 			File file = scanFiles.get(i);
@@ -62,19 +66,21 @@ public class ASTTest {
 	// AST特征抽取完整;
 	private static void Compelte() {
 
-		List<String> list = scanProjects("E:\\迅雷下载\\github data dump");
+		List<String> list = scanProjects("F:\\data\\jarFiles\\decompileJars");
 
 		for (int i = 0; i < list.size(); i++) {
 			// System.out.println(list.get(i));
-			scanFilesWithNoRecursion("E:\\迅雷下载\\github data dump\\" + list.get(i), ".java");
-			projectName = list.get(i);
-			for (int j = 0; j < scanFiles.size(); j++) {
-				File file = scanFiles.get(j);
-				System.out.println(file);
-				className = file.getName();
-				CompilationUnit comp = getCompilationUnit(file.getAbsolutePath());
-				MyVisitor visitor = new MyVisitor();
-				comp.accept(visitor);
+			if(i > 23 && i < 54){
+				scanFilesWithNoRecursion("F:\\data\\jarFiles\\decompileJars\\" + list.get(i), ".java");
+				projectName = list.get(i);
+				for (int j = 0; j < scanFiles.size(); j++) {
+					File file = scanFiles.get(j);
+					System.out.println(file);
+					className = file.getName();
+					CompilationUnit comp = getCompilationUnit(file.getAbsolutePath());
+					MyVisitor visitor = new MyVisitor();
+					comp.accept(visitor);
+				}
 			}
 			scanFiles.clear();
 		}
@@ -83,17 +89,19 @@ public class ASTTest {
 	// 抽取.class文件;
 	private static void getClassFile() {
 
-		List<String> list = scanProjects("E:\\迅雷下载\\github data dump");
+		List<String> list = scanProjects("F:\\data\\jarFiles\\decompressionJars");
 		for (int i = 0; i < list.size(); i++) {
-			projectName = list.get(i);
-			scanFilesWithNoRecursion("E:\\迅雷下载\\github data dump\\" + list.get(i), ".class");
-			for (int j = 0; j < scanFiles.size(); j++) {
-				File file = scanFiles.get(j);
-				//System.out.println(file);
-				copyFile(file, projectName);
+			if(i > 13){
+				projectName = list.get(i);
+				scanFilesWithNoRecursion("F:\\data\\jarFiles\\decompressionJars\\" + list.get(i), ".class");
+				for (int j = 0; j < scanFiles.size(); j++) {
+					File file = scanFiles.get(j);
+					//System.out.println(file);
+					copyFile(file, projectName);
+				}
+				System.out.println(projectName + " num: " + scanFiles.size());
+				scanFiles.clear();
 			}
-			System.out.println(projectName + " num: " + scanFiles.size());
-			scanFiles.clear();
 		}
 	}
 
@@ -176,7 +184,7 @@ public class ASTTest {
 		// 将指定文件复制到指定目录
 		try {
 			Files.copy(Paths.get(file.toURI()),
-					new FileOutputStream("F:\\data\\classfile\\" + projectName + "@" + file.getName()));
+					new FileOutputStream("F:\\data\\jarFiles\\classfile\\" + projectName + "@" + file.getName()));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
