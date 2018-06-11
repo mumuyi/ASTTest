@@ -12,98 +12,146 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.MBeanAttributeInfo;
-
 public class ClassFileAnalysis {
 
 	private static List<String> list = new ArrayList<String>();
 
 	public static void main(String[] args) throws IOException {
-		fileAnalysis();
-		//decompile();
+		 fileAnalysis("F:\\data\\jarFiles\\decompile\\", "F:\\data\\jarFiles\\instruction\\");
+		//fileAnalysis("C:\\Users\\ai\\Desktop\\test\\", "C:\\Users\\ai\\Desktop\\test\\");
+		 
+		 //decompile();
+		
+		//TestNum("F:\\data\\jarFiles\\decompile\\");
+	}
+
+	private static void TestNum(String filePath) {
+		File directory = new File(filePath);
+		File[] files = directory.listFiles();
+		int i = 0;
+		int counter = 0;
+		for (File file : files) {
+			FileInputStream fis = null;
+			InputStreamReader isr = null;
+			BufferedReader br = null;
+			String filename = file.getName();
+			String str = "";
+			String str1 = "";
+			System.out.println(file.getName());
+			try {
+				fis = new FileInputStream(filePath + filename);
+				isr = new InputStreamReader(fis);
+				br = new BufferedReader(isr);
+				while ((str = br.readLine()) != null) {
+					if (!"".equals(str) && !"\n".equals(str) && !"{".equals(str) && !"}".equals(str)) {
+						str1 += (str + "\n");
+					} else {
+						str1 = "";
+					}
+					//System.out.println(str1);
+					if(str.contains("LineNumberTable:") && !str.replaceAll(" |\\t", "").equals("LineNumberTable:")){
+						System.out.println(str.replaceAll(" |\\t", ""));
+						counter ++;
+					}
+				}
+			} catch (FileNotFoundException e) {
+				System.out.println("Cann't find: " + filename);
+			} catch (IOException e) {
+				System.out.println("Cann't read: " + filename);
+			} finally {
+				try {
+					br.close();
+					isr.close();
+					fis.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			i ++;
+			if(i > 1)
+				break;
+		}
+		System.out.println("!!!!!!!!!!!!!!!!!!" + counter);
 	}
 
 	// 从反编译的文件中抽取需要的信息;
-	private static void fileAnalysis() {
+	private static void fileAnalysis(String filePath, String storePath) {
 
-		File directory = new File("F:\\data\\jarFiles\\decompile\\");
+		File directory = new File(filePath);
 		File[] files = directory.listFiles();
-		int flag = 0;
 		for (File file : files) {
-			if(flag == 0 && file.getName().contains("storm-core-0.9.3@event$fn__2456$G__2425__2461")){
-				flag = 1;
-			}
-			if(flag == 1){
-				FileInputStream fis = null;
-				InputStreamReader isr = null;
-				BufferedReader br = null;
-				// String filename =
-				// "Activiti-develop@AbstractActivitiTestCase$1.class";
-				String filename = file.getName();
+			FileInputStream fis = null;
+			InputStreamReader isr = null;
+			BufferedReader br = null;
+			// String filename =
+			// "Activiti-develop@AbstractActivitiTestCase$1.class";
+			String filename = file.getName();
+			try {
+				String str = "";
+				String str1 = "";
+				fis = new FileInputStream(filePath + filename);
+				isr = new InputStreamReader(fis);
+				br = new BufferedReader(isr);
+				while ((str = br.readLine()) != null) {
+					// System.out.println(str);
+					if (!"".equals(str) && !"\n".equals(str) && !"{".equals(str) && !"}".equals(str)) {
+						str1 += (str + "\n");
+					} else {
+						list.add(str1);
+						str1 = "";
+					}
+				}
+				list.add(str1);
+			} catch (FileNotFoundException e) {
+				System.out.println("Cann't find: " + filename);
+			} catch (IOException e) {
+				System.out.println("Cann't read: " + filename);
+			} finally {
 				try {
-					String str = "";
-					String str1 = "";
-					fis = new FileInputStream("F:\\data\\jarFiles\\decompile\\" + filename);
-					isr = new InputStreamReader(fis);
-					br = new BufferedReader(isr);
-					while ((str = br.readLine()) != null) {
-						// System.out.println(str);
-						if (!"".equals(str) && !"\n".equals(str) && !"{".equals(str) && !"}".equals(str)) {
-							str1 += (str + "\n");
-						} else {
-							list.add(str1);
-							str1 = "";
-						}
-					}
-					list.add(str1);
-				} catch (FileNotFoundException e) {
-					System.out.println("Cann't find: " + filename);
+					br.close();
+					isr.close();
+					fis.close();
 				} catch (IOException e) {
-					System.out.println("Cann't read: " + filename);
-				} finally {
-					try {
-						br.close();
-						isr.close();
-						fis.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					e.printStackTrace();
 				}
-	
-				// System.out.println(list.size());
-	
-				// 去掉第一块和最后一块;
-				list.remove(0);
-				list.remove(list.size() - 1);
-				// 去掉没有"Code:"和"LineNumberTable:"的块;
-				for (int i = 0; i < list.size(); i++) {
-					if (!list.get(i).contains("Code:") || !list.get(i).contains("LineNumberTable:")) {
-						list.remove(i);
-						i--;
-					}
-				}
-	
-				// 写入文件;
-				for (int i = 0; i < list.size(); i++) {
-					String name = NameExtraction(list.get(i));
-					List<String> ins = FeatureExtraction(list.get(i));
-					StringBuffer buffer = new StringBuffer();
-					for (String str : ins) {
-						buffer.append(str + "\n");
-					}
-					// 去掉最后一个回车;
-					buffer.delete(buffer.length() - 1, buffer.length());
-					try {
-						writeFileContent(
-								"F:\\data\\jarFiles\\instruction\\" + filename.replaceAll(".class", "") + "#" + name + ".txt",
-								buffer);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-				list.clear();
-				//break;
 			}
+
+			// System.out.println(list.size());
+
+			// 去掉第一块和最后一块;
+			list.remove(0);
+			list.remove(list.size() - 1);
+			// 去掉没有"Code:"和"LineNumberTable:"的块;
+			for (int i = 0; i < list.size(); i++) {
+				if (!list.get(i).contains("Code:") || !list.get(i).contains("LineNumberTable:")) {
+					list.remove(i);
+					i--;
+				}
+			}
+
+			// for (int i = 0; i < list.size(); i++){
+			// System.out.println(list.get(i));
+			// }
+
+			// 写入文件;
+			for (int i = 0; i < list.size(); i++) {
+				String name = NameExtraction(list.get(i));
+				List<String> ins = FeatureExtraction(list.get(i));
+				StringBuffer buffer = new StringBuffer();
+				for (String str : ins) {
+					buffer.append(str + "\n");
+				}
+				// 去掉最后一个回车;
+				buffer.delete(buffer.length() - 1, buffer.length());
+				try {
+					writeFileContent(storePath + filename.replaceAll(".class", "") + "#" + name + ".txt", buffer);
+					writeFileContent(storePath + filename.replaceAll(".class", "") + "#" + name + ".txt", buffer);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			list.clear();
+			// break;
 		}
 	}
 
@@ -121,9 +169,9 @@ public class ClassFileAnalysis {
 			}
 		}
 		String Name = "";
-		if(fuzzyName.indexOf("(") >= 0){
-			Name = fuzzyName.substring(0, fuzzyName.indexOf("("));			
-		}else{
+		if (fuzzyName.indexOf("(") >= 0) {
+			Name = fuzzyName.substring(0, fuzzyName.indexOf("("));
+		} else {
 			Name = "static";
 		}
 		System.out.println("Method Name: " + Name);
@@ -135,11 +183,15 @@ public class ClassFileAnalysis {
 	private static List<String> FeatureExtraction(String block) {
 		// for(int i=0;i<list.size();i++)
 		// 切割出"Code:"和:"LineNumberTable:之间的"
-		//System.out.println(block);
-		//System.out.println(block.indexOf("Code:") + " " + block.indexOf("LineNumberTable:"));
+		// System.out.println(block);
+		// System.out.println(block.indexOf("Code:") + " " +
+		// block.indexOf("LineNumberTable:"));
 		// System.out.println(block.charAt(block.indexOf("Code:")));
 		// System.out.println(block.charAt(block.indexOf("LineNumberTable:")));
-		String str1 = block.substring(block.indexOf("Code:") + 5, block.indexOf("LineNumberTable:"));
+		String str1 = block.substring(block.indexOf("Code:") + 5, block.indexOf("LineNumberTable:\n"));
+
+		// System.out.println(str1);
+
 		// 去掉多余的部分;
 		String[] strs = str1.split("\n");
 		List<String> strlist = new ArrayList<String>();
@@ -150,11 +202,10 @@ public class ClassFileAnalysis {
 		}
 		strlist.remove(0);
 
-		//for(String str : strlist){
-		//	System.out.println(str);
-		//}
-		
-		
+		// for(String str : strlist){
+		// System.out.println(str);
+		// }
+
 		// 抽取指令;
 		List<String> inslist = new ArrayList<String>();
 		// System.out.println("strlist's size: " + strlist.size());
@@ -164,16 +215,17 @@ public class ClassFileAnalysis {
 			int i = 0;
 			for (String sstr : strs1) {
 				if (!"".equals(sstr) && !"\n".equals(sstr) && null != sstr) {
-					//System.out.println(sstr);
+					// System.out.println(sstr);
 					if (i == 0) {
 						i++;
 					} else if (i == 1) {
-						if(sstr.equals("invokevirtual")||sstr.equals("invokespecial")||sstr.equals("invokestatic")||sstr.equals("invokeinterface")||sstr.equals("invokedynamic")){
+						if (sstr.equals("invokevirtual") || sstr.equals("invokespecial") || sstr.equals("invokestatic")
+								|| sstr.equals("invokeinterface") || sstr.equals("invokedynamic")) {
 							StringBuffer mBuffer = new StringBuffer(sstr);
 							mBuffer.append(" ");
-							mBuffer.append(strs1[strs1.length-1]);
+							mBuffer.append(strs1[strs1.length - 1]);
 							inslist.add(mBuffer.toString());
-						}else{
+						} else {
 							inslist.add(sstr);
 						}
 						i++;
@@ -183,10 +235,10 @@ public class ClassFileAnalysis {
 				}
 			}
 		}
-		//System.out.println("Instructions:");
-		//for (String str : inslist) {
-		//	System.out.println(str);
-		//}
+		// System.out.println("Instructions:");
+		// for (String str : inslist) {
+		// System.out.println(str);
+		// }
 
 		return inslist;
 	}
@@ -199,10 +251,10 @@ public class ClassFileAnalysis {
 		File[] files = directory.listFiles();
 		int flag = 0;
 		for (int i = 0; i < files.length; i++) {
-			if((flag == 0) && (files[i].getName().equals("tika-app-1.6@Count$2.class"))){
+			if ((flag == 0) && (files[i].getName().equals("tika-app-1.6@Count$2.class"))) {
 				flag = 1;
 			}
-			if(flag == 1){
+			if (flag == 1) {
 				Process process = run.exec("javap -verbose .\\data\\" + files[i].getName());
 				InputStream in = process.getInputStream();
 				BufferedReader reader = new BufferedReader(new InputStreamReader(in));
@@ -213,9 +265,9 @@ public class ClassFileAnalysis {
 					buffer.append("\n");
 				}
 				writeFileContent("F:\\data\\jarFiles\\decompile\\" + files[i].getName(), buffer);
-	
+
 				System.out.println(files[i].getName() + "               done " + i);
-				//break;
+				// break;
 			}
 		}
 	}
