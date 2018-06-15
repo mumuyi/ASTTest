@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,62 +19,83 @@ public class ClassFileAnalysis {
 	private static List<String> list = new ArrayList<String>();
 
 	public static void main(String[] args) throws IOException {
-		 fileAnalysis("F:\\data\\jarFiles\\decompile\\", "F:\\data\\jarFiles\\instruction\\");
+		//fileAnalysis("F:\\data\\jarFiles\\decompile\\", "F:\\data\\jarFiles\\instructionN\\");
 		//fileAnalysis("C:\\Users\\ai\\Desktop\\test\\", "C:\\Users\\ai\\Desktop\\test\\");
 		 
 		 //decompile();
 		
 		//TestNum("F:\\data\\jarFiles\\decompile\\");
+		
+		//iniFileList("F:\\data\\jarFiles\\Top100000\\instruction\\");
+		copyFile("F:\\data\\jarFiles\\Top100000\\filelist.txt");
 	}
 
-	private static void TestNum(String filePath) {
+	//根据文件列表拷贝文件;
+	public static void copyFile(String filePath){
+		List<String> fileList = new ArrayList<String>();
+		File file = new File(filePath);
+		FileInputStream fis = null;
+		InputStreamReader isr = null;
+		BufferedReader br = null;
+		try {
+			String str = "";
+			fis = new FileInputStream(file);
+			isr = new InputStreamReader(fis);
+			br = new BufferedReader(isr);
+			while ((str = br.readLine()) != null) {
+				fileList.add(str);
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println("Cann't find: " + filePath);
+		} catch (IOException e) {
+			System.out.println("Cann't read: " + filePath);
+		} finally {
+			try {
+				br.close();
+				isr.close();
+				fis.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		//System.out.println(fileList.size());
+		//System.out.println(fileList.get(fileList.size()-1));
+		
+		// 将指定文件复制到指定目录
+		for(int i = 0;i < fileList.size();i++){
+			File tempFile = new File("F:\\data\\jarFiles\\instructionN\\" + fileList.get(i));
+			try {
+				Files.copy(Paths.get(tempFile.toURI()),
+						new FileOutputStream("F:\\data\\jarFiles\\Top100000N\\instruction\\" + fileList.get(i)));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			//break;
+		}
+		
+	}
+	
+	
+	//生成文件列表;
+	public static void iniFileList(String filePath){
+		StringBuffer buffer = new StringBuffer();
 		File directory = new File(filePath);
 		File[] files = directory.listFiles();
-		int i = 0;
-		int counter = 0;
 		for (File file : files) {
-			FileInputStream fis = null;
-			InputStreamReader isr = null;
-			BufferedReader br = null;
-			String filename = file.getName();
-			String str = "";
-			String str1 = "";
-			System.out.println(file.getName());
-			try {
-				fis = new FileInputStream(filePath + filename);
-				isr = new InputStreamReader(fis);
-				br = new BufferedReader(isr);
-				while ((str = br.readLine()) != null) {
-					if (!"".equals(str) && !"\n".equals(str) && !"{".equals(str) && !"}".equals(str)) {
-						str1 += (str + "\n");
-					} else {
-						str1 = "";
-					}
-					//System.out.println(str1);
-					if(str.contains("LineNumberTable:") && !str.replaceAll(" |\\t", "").equals("LineNumberTable:")){
-						System.out.println(str.replaceAll(" |\\t", ""));
-						counter ++;
-					}
-				}
-			} catch (FileNotFoundException e) {
-				System.out.println("Cann't find: " + filename);
-			} catch (IOException e) {
-				System.out.println("Cann't read: " + filename);
-			} finally {
-				try {
-					br.close();
-					isr.close();
-					fis.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			i ++;
-			if(i > 1)
-				break;
+			buffer.append(file.getName());
+			buffer.append("\n");
+			//break;
 		}
-		System.out.println("!!!!!!!!!!!!!!!!!!" + counter);
+		try {
+			writeFileContent("F:\\data\\jarFiles\\Top100000\\filelist.txt",buffer);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		//System.out.println(buffer);
 	}
+
 
 	// 从反编译的文件中抽取需要的信息;
 	private static void fileAnalysis(String filePath, String storePath) {
@@ -151,7 +174,7 @@ public class ClassFileAnalysis {
 				}
 			}
 			list.clear();
-			// break;
+			//break;
 		}
 	}
 
@@ -225,7 +248,12 @@ public class ClassFileAnalysis {
 							mBuffer.append(" ");
 							mBuffer.append(strs1[strs1.length - 1]);
 							inslist.add(mBuffer.toString());
-						} else {
+						}else if(sstr.equals("new")){
+							StringBuffer mBuffer = new StringBuffer(sstr);
+							mBuffer.append(" ");
+							mBuffer.append(strs1[strs1.length - 1]);
+							inslist.add(mBuffer.toString());
+						}else {
 							inslist.add(sstr);
 						}
 						i++;
@@ -310,5 +338,55 @@ public class ClassFileAnalysis {
 			}
 		}
 		return bool;
+	}
+	
+	
+	private static void TestNum(String filePath) {
+		File directory = new File(filePath);
+		File[] files = directory.listFiles();
+		int i = 0;
+		int counter = 0;
+		for (File file : files) {
+			FileInputStream fis = null;
+			InputStreamReader isr = null;
+			BufferedReader br = null;
+			String filename = file.getName();
+			String str = "";
+			String str1 = "";
+			System.out.println(file.getName());
+			try {
+				fis = new FileInputStream(filePath + filename);
+				isr = new InputStreamReader(fis);
+				br = new BufferedReader(isr);
+				while ((str = br.readLine()) != null) {
+					if (!"".equals(str) && !"\n".equals(str) && !"{".equals(str) && !"}".equals(str)) {
+						str1 += (str + "\n");
+					} else {
+						str1 = "";
+					}
+					//System.out.println(str1);
+					if(str.contains("LineNumberTable:") && !str.replaceAll(" |\\t", "").equals("LineNumberTable:")){
+						System.out.println(str.replaceAll(" |\\t", ""));
+						counter ++;
+					}
+				}
+			} catch (FileNotFoundException e) {
+				System.out.println("Cann't find: " + filename);
+			} catch (IOException e) {
+				System.out.println("Cann't read: " + filename);
+			} finally {
+				try {
+					br.close();
+					isr.close();
+					fis.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			i ++;
+			if(i > 1)
+				break;
+		}
+		System.out.println("!!!!!!!!!!!!!!!!!!" + counter);
 	}
 }
