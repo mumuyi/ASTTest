@@ -1,10 +1,12 @@
 package cn.nuaa.ai.ast;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -27,11 +29,13 @@ public class ASTTest {
 	private static LinkedList<File> queueFiles = new LinkedList<File>();
 
 	public static void main(String[] args) {
-		
+
 		//Compelte();
-		//SingleProjectTest();
+		// SingleProjectTest();
+
+		// getClassFile();
 		
-		getClassFile();
+		filter();
 	}
 
 	// 单个文件解析;
@@ -66,12 +70,12 @@ public class ASTTest {
 	// AST特征抽取完整;
 	private static void Compelte() {
 
-		List<String> list = scanProjects("F:\\data\\jarFiles\\decompileJars");
+		List<String> list = scanProjects("E:\\Download\\github data dump");
 
 		for (int i = 0; i < list.size(); i++) {
 			// System.out.println(list.get(i));
-			if(i > 23 && i < 54){
-				scanFilesWithNoRecursion("F:\\data\\jarFiles\\decompileJars\\" + list.get(i), ".java");
+			if (i > 40 && i < 63) {
+				scanFilesWithNoRecursion("E:\\Download\\github data dump\\" + list.get(i), ".java");
 				projectName = list.get(i);
 				for (int j = 0; j < scanFiles.size(); j++) {
 					File file = scanFiles.get(j);
@@ -91,12 +95,12 @@ public class ASTTest {
 
 		List<String> list = scanProjects("F:\\data\\jarFiles\\decompressionJars");
 		for (int i = 0; i < list.size(); i++) {
-			if(i > 13){
+			if (i > 13) {
 				projectName = list.get(i);
 				scanFilesWithNoRecursion("F:\\data\\jarFiles\\decompressionJars\\" + list.get(i), ".class");
 				for (int j = 0; j < scanFiles.size(); j++) {
 					File file = scanFiles.get(j);
-					//System.out.println(file);
+					// System.out.println(file);
 					copyFile(file, projectName);
 				}
 				System.out.println(projectName + " num: " + scanFiles.size());
@@ -190,5 +194,45 @@ public class ASTTest {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static void filter(){
+		File directory = new File("F:\\data\\github\\methodbody\\");
+		File[] insFiles = directory.listFiles();
+		List<File> removeList = new ArrayList<File>();
+		System.out.println(insFiles.length);
+		for(int i = 79000;i < insFiles.length;i++){
+			if(lineNum(insFiles[i].getName()) < 5){
+				System.out.println("remove " + insFiles[i].getName() + " " + i);
+				removeList.add(insFiles[i]);
+				insFiles[i].delete();
+			}
+		}
+		System.out.println(removeList.size());
+		//for(int i = 0;i < removeList.size();i++){
+		//	removeList.get(i).delete();
+		//}
+	}
+	
+	
+	/**
+	 * 统计一个文件里有多少行
+	 */
+	private static int lineNum(String fileName) {
+		int line = 0;
+		try {
+			FileReader fr = new FileReader("F:\\data\\github\\methodbody\\" + fileName);
+			BufferedReader br = new BufferedReader(fr);
+			while (br.readLine() != null) {
+				line++;
+			}
+			fr.close();
+			br.close();
+
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+
+		return line;
 	}
 }

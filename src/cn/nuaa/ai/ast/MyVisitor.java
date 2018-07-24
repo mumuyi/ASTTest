@@ -47,14 +47,14 @@ public class MyVisitor extends ASTVisitor {
 		if (methodName != null && !"".equals(methodName)) {
 			if (methodBody != null && !"".equals(methodBody)) {
 				try {
-					writeFileContent("F:\\data\\jarFiles\\methodbody\\"+ASTTest.projectName.replaceAll(".jar.src", "")+"@"+ASTTest.className.replaceAll(".java", "")+"#"+methodName+".txt", methodBody);
+					writeFileContent("F:\\data\\github\\methodbody\\"+ASTTest.projectName.replaceAll(".jar.src", "")+"@"+ASTTest.className.replaceAll(".java", "")+"#"+methodName+".txt", methodBody);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 			if (methodAnnotation != null && !"".equals(methodAnnotation)) {
 				try {
-					writeFileContent("F:\\data\\methodannotation\\"+ASTTest.projectName+"@"+ASTTest.className+"#"+methodName+".txt", methodAnnotation);
+					writeFileContent("F:\\data\\github\\methodannotation\\"+ASTTest.projectName+"@"+ASTTest.className+"#"+methodName+".txt", methodAnnotation);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

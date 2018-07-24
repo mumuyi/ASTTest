@@ -1,0 +1,32 @@
+aload_0
+aload_1
+aload_2
+invokespecial java/awt/datatransfer/DataFlavor."<init>":(Ljava/lang/String;Ljava/lang/String;)V
+aload_0
+aconst_null
+putfield
+aload_0
+aconst_null
+putfield
+aload_0
+aconst_null
+putfield
+aload_0
+aconst_null
+putfield
+aload_0
+aload_1
+putfield
+aload_0
+ldc
+invokestatic java/lang/Class.forName:(Ljava/lang/String;)Ljava/lang/Class;
+putfield
+goto
+astore_3
+aload_0
+aload_2
+putfield
+return
+table:
+to
+40
