@@ -201,11 +201,11 @@ public class ASTTest {
 		File[] insFiles = directory.listFiles();
 		List<File> removeList = new ArrayList<File>();
 		System.out.println(insFiles.length);
-		for(int i = 79000;i < insFiles.length;i++){
-			if(lineNum(insFiles[i].getName()) < 5){
+		for(int i = 0;i < insFiles.length;i++){
+			if(lineNum(insFiles[i].getName()) < 10){
 				System.out.println("remove " + insFiles[i].getName() + " " + i);
 				removeList.add(insFiles[i]);
-				insFiles[i].delete();
+				//insFiles[i].delete();
 			}
 		}
 		System.out.println(removeList.size());
