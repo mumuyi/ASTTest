@@ -35,7 +35,12 @@ public class ASTTest {
 
 		// getClassFile();
 		
-		filter();
+		//filter();
+		
+		
+		CompilationUnit comp = getCompilationUnit("C:\\Users\\ai\\Desktop\\MyVisitor.java");
+		DemoVisitor2 visitor = new DemoVisitor2();
+		comp.accept(visitor);
 	}
 
 	// 单个文件解析;

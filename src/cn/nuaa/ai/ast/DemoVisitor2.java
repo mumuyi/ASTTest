@@ -10,6 +10,8 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
@@ -19,7 +21,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
-public class DemoVisitor extends ASTVisitor {
+public class DemoVisitor2 extends ASTVisitor {
 
 	public boolean visit(FieldDeclaration node) {
 		for (Object obj : node.fragments()) {
@@ -33,15 +35,16 @@ public class DemoVisitor extends ASTVisitor {
 	public boolean visit(MethodInvocation node) {
 		System.out.println("MethodInvocation - Invocation method name: "+node.getName());// 测试每个方法里所调用的方法
 		System.out.println("MethodInvocation - Invocation method way: "+node.getExpression());// 输出调用方法的对象，例如commandline.createArgument().setValue("-root_dir"); 总共有三个调用commandline.createArgument()，commandline，null
+		System.out.println("######################################");
 		return true;
 	}
 
 	@SuppressWarnings("unchecked")
 	public boolean visit(MethodDeclaration node) {
-		System.out.println("MethodDeclaration - Method name: " + node.getName());// 得到方法名
-		System.out.println("MethodDeclaration - the character length of the method is:" + node.getLength());// 节点的长度，不过是以字符长度来计算的，不是以行数来计//算的
-		System.out.println("MethodDeclaration - Parameter list of Method:\t" + node.parameters());// 得到方法的参数列表
-		System.out.println("MethodDeclaration - Return Value of Method:\t" + node.getReturnType2());// 得到方法的返回值
+		//System.out.println("MethodDeclaration - Method name: " + node.getName());// 得到方法名
+		//System.out.println("MethodDeclaration - the character length of the method is:" + node.getLength());// 节点的长度，不过是以字符长度来计算的，不是以行数来计//算的
+		//System.out.println("MethodDeclaration - Parameter list of Method:\t" + node.parameters());// 得到方法的参数列表
+		//System.out.println("MethodDeclaration - Return Value of Method:\t" + node.getReturnType2());// 得到方法的返回值
 		
 		
 		System.out.println("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
@@ -49,6 +52,7 @@ public class DemoVisitor extends ASTVisitor {
 		//System.out.println(b.statements());
 		List<Statement> list = b.statements();
 		for(int i = 0;i < list.size();i++){
+			/*
 			if(list.get(i).getClass().getSimpleName().equals("IfStatement")){
 				System.out.print(list.get(i));
 				System.out.println("it a IF statement:");
@@ -56,18 +60,21 @@ public class DemoVisitor extends ASTVisitor {
 				System.out.println("get expression: "+ifs.getExpression());
 				System.out.println("get then statement: "+ifs.getThenStatement());
 				System.out.println("get else statement: "+ifs.getElseStatement());
+				System.out.println("###################################");
 			}else if(list.get(i).getClass().getSimpleName().equals("WhileStatement")){
 				System.out.print(list.get(i));
 				System.out.println("it a WHILE statement");
 				WhileStatement ifs = (WhileStatement) list.get(i);
 				System.out.println("get expression: "+ifs.getExpression());
 				System.out.println("get body: "+ifs.getBody());
+				System.out.println("###################################");
 			}else if(list.get(i).getClass().getSimpleName().equals("ForStatement")){
 				System.out.print(list.get(i));
 				System.out.println("it a FOR statement");
 				ForStatement ifs = (ForStatement) list.get(i);
 				System.out.println("get expression: "+ifs.getExpression());
 				System.out.println("get body: "+ifs.getBody());
+				System.out.println("###################################");
 			}else if(list.get(i).getClass().getSimpleName().equals("VariableDeclarationStatement")){
 				System.out.print(list.get(i));
 				System.out.println("it a VariableDeclarationStatement");
@@ -76,6 +83,7 @@ public class DemoVisitor extends ASTVisitor {
 				VariableDeclarationFragment vdf = (VariableDeclarationFragment) ifs.fragments().get(0);
 				System.out.println("get variable name: "+ vdf.getName());
 				System.out.println("get variable value: "+ vdf.getInitializer());
+				System.out.println("###################################");
 			}else if(list.get(i).getClass().getSimpleName().equals("ExpressionStatement")){
 				System.out.print(list.get(i));
 				System.out.println("it a ExpressionStatement");
@@ -93,15 +101,27 @@ public class DemoVisitor extends ASTVisitor {
 					System.out.println("get Expression: "+ mi.getExpression());
 					System.out.println("get Operators: "+ mi.properties());
 				}
-			}else if(list.get(i).getClass().getSimpleName().equals("ExpressionStatement")){
-				
+				System.out.println("###################################");
 			}else{
 				System.out.print(list.get(i).getClass().getSimpleName());
+				System.out.println("\n###################################");
+			}
+			*/
+			
+			if(list.get(i).getClass().getSimpleName().equals("VariableDeclarationStatement")){
+				System.out.print(list.get(i));
+				System.out.println("it a VariableDeclarationStatement");
+				VariableDeclarationStatement ifs = (VariableDeclarationStatement) list.get(i);
+				System.out.println("get Type: "+ ifs.getType());
+				VariableDeclarationFragment vdf = (VariableDeclarationFragment) ifs.fragments().get(0);
+				System.out.println("get variable name: "+ vdf.getName());
+				System.out.println("get variable value: "+ vdf.getInitializer());
+				System.out.println("###################################");
 			}
 		}
 		
 		//获取注释;
-		System.out.println("annotation: "+node.getJavadoc());
+		//System.out.println("annotation: "+node.getJavadoc());
 		
 		
 		
