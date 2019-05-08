@@ -1,19 +1,25 @@
 package cn.nuaa.ai.ast;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -27,6 +33,12 @@ public class ASTTest {
 
 	/** linkedList实现 **/
 	private static LinkedList<File> queueFiles = new LinkedList<File>();
+	
+	
+	public static Map<String,Integer> myMethods = new HashMap<String,Integer>();
+	public static Map<String,Integer> myTypes = new HashMap<String,Integer>();
+	public static Map<String,Integer> myTokens = new HashMap<String,Integer>();
+	public static List<String> myStatements = new ArrayList<>();
 
 	public static void main(String[] args) {
 
@@ -38,9 +50,44 @@ public class ASTTest {
 		//filter();
 		
 		
-		CompilationUnit comp = getCompilationUnit("C:\\Users\\ai\\Desktop\\MyVisitor.java");
+		//addClassHead();
 		DemoVisitor2 visitor = new DemoVisitor2();
-		comp.accept(visitor);
+		
+		File[] files = new File("F:\\data\\github\\methodbody2\\").listFiles();
+		
+		int i = 0;
+		for(File file : files){
+			System.out.println(i + "   " + file.getName());
+			CompilationUnit comp = getCompilationUnit("F:\\data\\github\\methodbody2\\" + file.getName());
+			comp.accept(visitor);
+			i++;
+			//if(i > 100)
+			//	break;
+		}
+		
+		/*
+		System.out.println("\n\n\n\n\n\n\n\n");
+		for(String s : myStatements){
+			System.out.println(s);
+		}
+		System.out.println("\n\n");
+		for(String s : myTypes.keySet()){
+			System.out.println(s + " " + myTypes.get(s));
+		}
+		System.out.println("\n\n");
+		for(String s : myTokens.keySet()){
+			System.out.println(s + " " + myTokens.get(s));
+		}
+		
+		System.out.println("\n\n");
+		for(String s : myMethods.keySet()){
+			System.out.println(s + " " + myMethods.get(s));
+		}
+		*/
+		
+		storeData("myTypes",myTypes);
+		storeData("myTokens",myTokens);
+		storeData("myMethods",myMethods);
 	}
 
 	// 单个文件解析;
@@ -239,5 +286,51 @@ public class ASTTest {
 		}
 
 		return line;
+	}
+	
+	private static void storeData(String fileName,Map<String,Integer> data){
+		String content = "";
+		for(String s : data.keySet()){
+			content += s + " " + data.get(s) + "\n";
+		}
+		content = content.substring(0, content.length()-1);
+		try {
+			BufferedWriter out = new BufferedWriter(new FileWriter("C:\\Users\\ai\\Desktop\\" + fileName + ".txt"));
+			out.write(content);
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	private static void addClassHead(){
+		File[] files = new File("F:\\data\\github\\methodbody\\").listFiles();
+		for(File file : files){
+			System.out.println(file.getName());
+			String fileName = file.getName();
+			String code = "";
+			try{
+	            BufferedReader in=new BufferedReader(new FileReader("F:\\data\\github\\methodbody\\" + fileName));
+	            String str;
+	            while((str=in.readLine())!=null){
+	            	code += (str + "\n");
+	            }
+	            in.close();
+	
+	            } catch (IOException e) { 
+	        }
+			code = code.substring(0, code.length()-1);
+			code = "public class test{\n" + code + "\n}";
+			//System.out.println(code);
+			
+			try {
+				BufferedWriter out = new BufferedWriter(new FileWriter("F:\\data\\github\\methodbody2\\" + fileName));
+				out.write(code);
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
